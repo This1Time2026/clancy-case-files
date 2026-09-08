@@ -116,6 +116,10 @@ section h2 {
   cursor: pointer;
 }
 
+.poll label:hover {
+  background: #222830;
+}
+
 .poll button {
   margin-top: 15px;
   padding: 13px 22px;
@@ -128,6 +132,35 @@ section h2 {
 #result {
   margin-top: 15px;
   color: #bfc6cd;
+}
+
+.results {
+  margin-top: 25px;
+}
+
+.result-row {
+  margin: 14px 0;
+}
+
+.result-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  color: #cbd1d7;
+}
+
+.bar {
+  height: 12px;
+  background: #242a31;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: #8b949e;
+  width: 0%;
+  transition: width 0.4s ease;
 }
 
 .notice {
@@ -237,6 +270,50 @@ footer {
 
     <div id="result"></div>
 
+    <div class="results">
+      <h3>Poll Results</h3>
+
+      <div class="result-row">
+        <div class="result-label">
+          <span>Lindsay</span>
+          <span id="lindsay-count">0</span>
+        </div>
+        <div class="bar">
+          <div class="bar-fill" id="lindsay-bar"></div>
+        </div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">
+          <span>Patrick</span>
+          <span id="patrick-count">0</span>
+        </div>
+        <div class="bar">
+          <div class="bar-fill" id="patrick-bar"></div>
+        </div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">
+          <span>Someone else</span>
+          <span id="other-count">0</span>
+        </div>
+        <div class="bar">
+          <div class="bar-fill" id="other-bar"></div>
+        </div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">
+          <span>Not enough evidence</span>
+          <span id="unknown-count">0</span>
+        </div>
+        <div class="bar">
+          <div class="bar-fill" id="unknown-bar"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <div class="card">
@@ -269,19 +346,169 @@ footer {
   <span class="notice">Independent discussion project</span>
 </footer>
 
-<script>
-function submitVote() {
-  const selected = document.querySelector('input[name="vote"]:checked');
-  const result = document.getElementById("result");
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  if (!selected) {
-    result.textContent = "Please select an option first.";
+<script>
+
+// ============================================
+// PUT YOUR TWO SUPABASE VALUES HERE
+// ============================================
+
+const SUPABASE_URL = "https://ixdjzyvvmwdwrasxqjfh.supabase.co/rest/v1/";
+
+const SUPABASE_PUBLISHABLE_KEY ="sb_publishable_xh-RX49rR320mPB2Rm5gmA_0kYYoYTX";
+ "i;
+
+// ============================================
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+async function ensureSignedIn() {
+
+  const sessionResult = await supabase.auth.getSession();
+
+  if (sessionResult.data.session) {
+    return sessionResult.data.session.user;
+  }
+
+  const loginResult = await supabase.auth.signInAnonymously();
+
+  if (loginResult.error) {
+    throw loginResult.error;
+  }
+
+  return loginResult.data.user;
+}
+
+
+async function loadResults() {
+
+  const result = await supabase
+    .from("poll_results")
+    .select("choice, votes");
+
+  if (result.error) {
+    console.error(result.error);
     return;
   }
 
-  result.textContent =
-    "Thanks for voting. Your response has been recorded on this device.";
+  const counts = {
+    lindsay: 0,
+    patrick: 0,
+    other: 0,
+    unknown: 0
+  };
+
+  result.data.forEach(row => {
+    counts[row.choice] = row.votes;
+  });
+
+  const total =
+    counts.lindsay +
+    counts.patrick +
+    counts.other +
+    counts.unknown;
+
+  updateResultDisplay("lindsay", counts.lindsay, total);
+  updateResultDisplay("patrick", counts.patrick, total);
+  updateResultDisplay("other", counts.other, total);
+  updateResultDisplay("unknown", counts.unknown, total);
 }
+
+
+function updateResultDisplay(choice, count, total) {
+
+  const countElement =
+    document.getElementById(choice + "-count");
+
+  const barElement =
+    document.getElementById(choice + "-bar");
+
+  countElement.textContent = count;
+
+  const percentage =
+    total > 0 ? (count / total) * 100 : 0;
+
+  barElement.style.width = percentage + "%";
+}
+
+
+async function submitVote() {
+
+  const selected =
+    document.querySelector('input[name="vote"]:checked');
+
+  const resultElement =
+    document.getElementById("result");
+
+  if (!selected) {
+
+    resultElement.textContent =
+      "Please select an option first.";
+
+    return;
+  }
+
+  resultElement.textContent =
+    "Submitting your vote...";
+
+  try {
+
+    const user = await ensureSignedIn();
+
+    const voteResult = await supabase
+      .from("poll_votes")
+      .upsert(
+        {
+          user_id: user.id,
+          choice: selected.value,
+          updated_at: new Date().toISOString()
+        },
+        {
+          onConflict: "user_id"
+        }
+      );
+
+    if (voteResult.error) {
+      throw voteResult.error;
+    }
+
+    resultElement.textContent =
+      "Your vote has been recorded. The results are shared with everyone who visits this site.";
+
+    await loadResults();
+
+  } catch (error) {
+
+    console.error(error);
+
+    resultElement.textContent =
+      "Sorry, there was a problem recording your vote. Please try again.";
+  }
+}
+
+
+window.addEventListener("load", async () => {
+
+  try {
+
+    await ensureSignedIn();
+
+    await loadResults();
+
+  } catch (error) {
+
+    console.error(error);
+
+    document.getElementById("result").textContent =
+      "The poll is temporarily unavailable.";
+  }
+
+});
+
 </script>
 
 </body>
