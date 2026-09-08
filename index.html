@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Clancy Case Files</title>
+<style>
+:root{--bg:#0b0d10;--panel:#151920;--panel2:#1c2129;--text:#e9edf2;--muted:#9ca7b4;--line:#303743;--accent:#c7a86b;--danger:#c96b6b}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at top,#202630 0,#0b0d10 48%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.55}
+header{border-bottom:1px solid var(--line);background:rgba(11,13,16,.9);position:sticky;top:0;backdrop-filter:blur(10px);z-index:5}
+.nav{max-width:1120px;margin:auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{font-family:Georgia,serif;font-size:1.25rem;letter-spacing:.06em}.brand span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:.92rem}nav a:hover{color:var(--text)}
+main{max-width:1120px;margin:auto;padding:55px 20px 80px}.hero{display:grid;grid-template-columns:1.35fr .65fr;gap:28px;align-items:stretch}
+.kicker{color:var(--accent);font-weight:700;letter-spacing:.16em;font-size:.76rem}.hero h1{font:700 clamp(2.5rem,7vw,5.4rem)/.95 Georgia,serif;margin:12px 0 18px}.hero p{color:var(--muted);font-size:1.08rem;max-width:700px}.buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:12px 17px;border-radius:8px;text-decoration:none;cursor:pointer}.btn.primary{background:var(--accent);color:#17130b;border-color:var(--accent);font-weight:700}
+.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 16px 45px rgba(0,0,0,.18)}
+.status{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:18px}.status strong{font-size:1.45rem}.badge{padding:6px 10px;border-radius:999px;background:#4a3030;color:#f1b2b2;font-size:.76rem;font-weight:700}
+section{margin-top:65px}.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:20px}.sectionhead h2{font:700 2rem Georgia,serif;margin:0}.muted{color:var(--muted)}
+.poll{display:grid;grid-template-columns:1fr 1fr;gap:24px}.choice{display:block;border:1px solid var(--line);padding:14px;border-radius:9px;margin:10px 0;background:#11151b;cursor:pointer}.choice:hover{border-color:#596270}.choice input{margin-right:10px}.note{font-size:.84rem;color:var(--muted);margin-top:15px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.tile{min-height:170px}.tile h3{font:700 1.3rem Georgia,serif;margin:8px 0}.icon{font-size:1.5rem}
+.theory{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.tag{font-size:.72rem;color:var(--accent);letter-spacing:.1em;font-weight:700}
+.discussion{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}.post{padding:17px 0;border-bottom:1px solid var(--line)}.post:last-child{border-bottom:0}.post h3{margin:0 0 5px}.meta{color:var(--muted);font-size:.82rem}
+footer{border-top:1px solid var(--line);padding:30px 20px;color:var(--muted);text-align:center;font-size:.85rem}
+@media(max-width:800px){.hero,.poll,.theory{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}nav a{margin-left:8px}}@media(max-width:520px){.grid{grid-template-columns:1fr}nav{display:none}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="brand">THE CLANCY <span>CASE FILES</span></div><nav><a href="#case">Case</a><a href="#evidence">Evidence</a><a href="#theories">Theories</a><a href="#discussion">Discussion</a><a href="#sources">Sources</a></nav></div></header>
+
+<main>
+<section class="hero" style="margin-top:0">
+<div>
+<div class="kicker">PUBLIC EVIDENCE • COMMUNITY DISCUSSION</div>
+<h1>Examine the evidence.<br>Question the timeline.</h1>
+<p>A community space for organizing publicly available information about the Lindsay Clancy case, comparing competing interpretations, and discussing what the evidence does — and does not — establish.</p>
+<div class="buttons"><a class="btn primary" href="#poll">Vote in the poll</a><a class="btn" href="#case">Open case files</a></div>
+</div>
+<div class="card">
+<div class="status"><span>CASE STATUS</span><span class="badge">MISTRIAL</span></div>
+<p class="muted">Status shown for discussion context. The site should distinguish court findings, allegations, reporting, and user speculation.</p>
+<div style="margin-top:25px"><span class="tag">START HERE</span><h3>How this site works</h3><p class="muted">Read the documented record first, then explore the theories and community discussion.</p></div>
+</div>
+</section>
+
+<section id="poll">
+<div class="sectionhead"><div><div class="kicker">THE COMMUNITY QUESTION</div><h2>What do you believe?</h2></div><span class="muted">Demo poll — votes are not stored yet</span></div>
+<div class="card poll">
+<div>
+<p><strong>Based on the publicly available evidence, which explanation do you find most convincing?</strong></p>
+<label class="choice"><input type="radio" name="vote" value="Lindsay"> Lindsay</label>
+<label class="choice"><input type="radio" name="vote" value="Patrick"> Patrick</label>
+<label class="choice"><input type="radio" name="vote" value="Someone else"> Someone else</label>
+<label class="choice"><input type="radio" name="vote" value="Not enough evidence"> Not enough evidence</label>
+<button class="btn primary" onclick="vote()">Cast my vote</button>
+<p id="voteMsg" class="note"></p>
+</div>
+<div><h3>Poll design</h3><p class="muted">This wording is intentionally about what users believe the public evidence supports. It avoids presenting an unresolved allegation as an established fact.</p><div id="bars"></div></div>
+</div>
+</section>
+
+<section id="case">
+<div class="sectionhead"><div><div class="kicker">CASE FILES</div><h2>Start with the record</h2></div></div>
+<div class="grid">
+<div class="card tile"><div class="icon">🗓️</div><h3>Timeline</h3><p class="muted">Build a minute-by-minute chronology from sourced material.</p></div>
+<div class="card tile"><div class="icon">⚖️</div><h3>Trial</h3><p class="muted">Separate what each side argued from what the court actually established.</p></div>
+<div class="card tile"><div class="icon">📄</div><h3>Court documents</h3><p class="muted">Create a searchable index of public filings and other primary sources.</p></div>
+</div>
+</section>
+
+<section id="evidence">
+<div class="sectionhead"><div><div class="kicker">EVIDENCE</div><h2>Label everything</h2></div></div>
+<div class="grid">
+<div class="card tile"><div class="tag">DOCUMENTED</div><h3>Primary evidence</h3><p class="muted">Court records, transcripts, exhibits and other directly sourced material.</p></div>
+<div class="card tile"><div class="tag">REPORTED</div><h3>News reporting</h3><p class="muted">Claims and developments reported by reputable outlets, with links.</p></div>
+<div class="card tile"><div class="tag">SPECULATION</div><h3>Community theories</h3><p class="muted">Interpretations belong here — clearly marked as interpretation.</p></div>
+</div>
+</section>
+
+<section id="theories">
+<div class="sectionhead"><div><div class="kicker">COMPETING THEORIES</div><h2>Make the arguments visible</h2></div></div>
+<div class="theory">
+<div class="card"><div class="tag">THEORY 01</div><h3>Lindsay was responsible</h3><p class="muted">Arguments supporting and challenging this interpretation can be organized here, each tied to a source.</p><div class="buttons"><a class="btn" href="#discussion">Discuss</a></div></div>
+<div class="card"><div class="tag">THEORY 02</div><h3>Patrick was responsible</h3><p class="muted">Arguments supporting and challenging this interpretation can be organized here, each tied to a source.</p><div class="buttons"><a class="btn" href="#discussion">Discuss</a></div></div>
+</div>
+</section>
+
+<section id="discussion">
+<div class="sectionhead"><div><div class="kicker">COMMUNITY</div><h2>Discussion board</h2></div><button class="btn" onclick="alert('Discussion posting will be connected to a database in the next build.')">+ New discussion</button></div>
+<div class="card">
+<div class="discussion"><div class="post"><h3>What evidence do you think deserves the most attention?</h3><div class="meta">Example discussion • 0 replies</div></div><button class="btn">Open</button></div>
+<div class="discussion"><div class="post"><h3>Which parts of the timeline remain unclear?</h3><div class="meta">Example discussion • 0 replies</div></div><button class="btn">Open</button></div>
+<div class="discussion"><div class="post"><h3>What would change your mind?</h3><div class="meta">Example discussion • 0 replies</div></div><button class="btn">Open</button></div>
+</div>
+</section>
+
+<section id="sources">
+<div class="sectionhead"><div><div class="kicker">SOURCE ROOM</div><h2>Follow the evidence</h2></div></div>
+<div class="card"><p class="muted">The final site will give every factual case entry a source and will distinguish primary documents from secondary reporting. We can build the source database after the layout is approved.</p></div>
+</section>
+</main>
+
+<footer>THE CLANCY CASE FILES • Discussion of publicly available information • Claims and theories should be clearly identified as such.</footer>
+
+<script>
+let counts={Lindsay:63,Patrick:22,"Someone else":3,"Not enough evidence":12};
+function render(){let total=Object.values(counts).reduce((a,b)=>a+b,0);document.getElementById('bars').innerHTML=Object.entries(counts).map(([k,v])=>`<div style="margin:13px 0"><div style="display:flex;justify-content:space-between;font-size:.85rem"><span>${k}</span><span>${Math.round(v/total*100)}%</span></div><div style="height:8px;background:#0b0d10;border-radius:99px;overflow:hidden"><div style="height:100%;width:${v/total*100}%;background:#c7a86b"></div></div></div>`).join('')}
+function vote(){let x=document.querySelector('input[name=vote]:checked');let m=document.getElementById('voteMsg');if(!x){m.textContent='Please select an option first.';return}counts[x.value]++;render();m.textContent='Thanks — your vote has been added to this demo. A real version will store votes securely.'}
+render();
+</script>
+</body>
+</html>
